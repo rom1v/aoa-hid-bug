@@ -91,3 +91,11 @@ mandatory has been merged, hence the problem.
 It should be provided like in [commit 975a683].
 
 [commit 975a683]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=975a683271e690e7e467b274f22efadf1e696b5e
+
+## Fix
+
+The problem existed in the [Common Android Kernel Tree]. It has been fixed by
+[commit a38efde].
+
+[Common Android Kernel Tree]: https://android.googlesource.com/kernel/common/
+[commit a38efde]: https://android.googlesource.com/kernel/common/+/a38efdea3b667078348a2c7c45e9508b423aa042
