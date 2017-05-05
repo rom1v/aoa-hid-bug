@@ -54,3 +54,40 @@ the result for a Lenovo TB3-850M:
     Sending HID descriptor...
     Sending HID event...
     Pipe error
+
+## Investigations
+
+On failing devices, `dmesg` displays these lines immediately after
+`send_hid_descriptor()`:
+
+    (0)[8196:kworker/0:3]hid (null): transport driver missing .raw_request()
+    (0)[8196:kworker/0:3][g_android]can't add hid device: -22
+    (0)[8196:kworker/0:3][g_android]can't add HID deviceffffffc05bda8480
+
+The error `transport driver missing .raw_request()` has been added by [commit
+3c86726] (integrated since kernel `v3.15`).
+
+[commit 3c86726]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=3c86726cfe38952f0366f86acfbbb025813ec1c2
+
+In the kernel sources of SM-A320F (A3 2017) from [Samsung]
+(`SM-A320F_CIS_MM_Opensource.zip`), we can see that they do not provide a
+`raw_request` callback (`drivers/usb/gadget/function/f_accessory.c`):
+
+[samsung]: http://opensource.samsung.com/
+
+```c
+static struct hid_ll_driver acc_hid_ll_driver = {
+    .parse = acc_hid_parse,
+    .start = acc_hid_start,
+    .stop = acc_hid_stop,
+    .open = acc_hid_open,
+    .close = acc_hid_close,
+};
+```
+
+The `raw_request` callback is not provided while the commit that made it
+mandatory has been merged, hence the problem.
+
+It should be provided like in [commit 975a683].
+
+[commit 975a683]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=975a683271e690e7e467b274f22efadf1e696b5e
